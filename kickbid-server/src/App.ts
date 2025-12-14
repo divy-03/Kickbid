@@ -2,6 +2,9 @@ import express, { type Express } from "express";
 import { createServer, Server as HTTPServer } from "http";
 import cookieParser from "cookie-parser";
 import { logger } from "@common/utils/logger";
+import routes from "@src/routes";
+import errorHandler from "@common/middlewares/errorHandler";
+import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cors from "cors";
 
 class App {
@@ -38,13 +41,19 @@ class App {
     // Routes
     this.routes();
 
+    // Validation middleware
+    this.app.use(validationErrorHandler);
+
+    // Global error middleware
+    this.app.use(errorHandler);
+
     logger.info("Kickbid server starting... enabling routing and middleware then continuing...");
 
     return this.server;
   }
 
   routes(): void {
-    // this.app.use(routes);
+    this.app.use(routes);
   }
 
   middlewares(): void {
