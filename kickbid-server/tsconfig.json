@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "rootDirs": ["src"],
+    "outDir": "dist",
+    "lib": ["es2023"],
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "types": ["node"],
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@common/*": ["./src/common/*"],
+      "@types/*": ["./src/common/types/*"]
+    }
+  }
+}
