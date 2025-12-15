@@ -12,3 +12,40 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  userId      String    @id @default(uuid()) @map("user_id")
+  name        String
+  email       String    @unique
+  password    String
+  createdAt   DateTime  @default(now())
+  role        Role      @default(PLAYER)
+
+  // Relations
+
+}
+
+enum Role {
+  PLAYER
+  ADMIN
+  CAPTAIN
+  OWNER
+}
+
+enum Position {
+  LW
+  RW
+  ST
+  CAM
+  CM
+  CF
+  CDM
+  LM
+  RM
+  LB
+  RB
+  CB
+  LWB
+  RWB
+  GK
+}

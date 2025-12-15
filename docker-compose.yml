@@ -1,0 +1,38 @@
+services:
+  server:
+    build: ./kickbid-server
+    container_name: kickbid-server
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./kickbid-server:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      PORT: 1337
+      DATABASE_URL: postgresql://postgres:password@db:5432/kickbid?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: pnpm run dev
+
+  db:
+    image: postgres:17
+    container_name: kickbid-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kickbid
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kickbid"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
