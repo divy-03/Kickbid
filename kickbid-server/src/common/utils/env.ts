@@ -2,7 +2,7 @@
   Handles getting value from environment file for given variable name.
   Throws error if no value found in env file for given variable name
 */
-import { logger } from "./logger.ts";
+import { logger } from "./logger";
 
 export function env(variable: string): string {
   const value = process.env[variable];

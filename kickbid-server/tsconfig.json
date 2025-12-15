@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "rootDirs": ["src"],
     "outDir": "dist",
     "lib": ["es2023"],
     "target": "es2023",
-    "module": "esnext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "types": ["node"],

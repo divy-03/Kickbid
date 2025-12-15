@@ -10,7 +10,7 @@ function errorHandler(
   _next: NextFunction
 ) {
   if (error instanceof ApiError) {
-    return res.status(error.StatusCode).json({
+    return res.status(error.statusCode).json({
       success: false,
       errorMessage: error.message,
       errors: error.errors,
