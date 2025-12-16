@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import App from "@src/App";
 import { env } from "@common/utils/env";
 import { logger } from "@common/utils/logger"
