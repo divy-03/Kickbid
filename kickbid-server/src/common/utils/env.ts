@@ -3,6 +3,9 @@
   Throws error if no value found in env file for given variable name
 */
 import { logger } from "./logger";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export function env(variable: string): string {
   const value = process.env[variable];
