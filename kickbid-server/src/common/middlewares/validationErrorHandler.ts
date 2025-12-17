@@ -5,7 +5,7 @@ import httpStatus from "http-status-codes";
 
 function validationErrorHandler(
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) {
   const errors = validationResult(req);
@@ -19,7 +19,7 @@ function validationErrorHandler(
       )
     );
   }
-  
+
   next();
 }
 

@@ -6,6 +6,7 @@ import routes from "@src/routes";
 import errorHandler from "@common/middlewares/errorHandler";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cors from "cors";
+import { validate } from "./common/middlewares/validate";
 
 class App {
   app: Express;
@@ -41,8 +42,8 @@ class App {
     // Routes
     this.routes();
 
-    // Validation middleware
-    this.app.use(validationErrorHandler);
+    // NOTE: (Do I need this) Validation middleware
+    // this.app.use(validate);
 
     // Global error middleware
     this.app.use(errorHandler);
