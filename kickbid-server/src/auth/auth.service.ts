@@ -33,9 +33,15 @@ export class AuthService {
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       await SessionRepo.createSession(sessionId, createdUser.userId, refreshToken, expiresAt)
 
-      return { status: StatusCodes.OK, success: true, data: { name: createdUser.name, email: createdUser.email }, message: "User successfully created" }
+      return ResApi.success(
+        {
+          name: createdUser.name,
+          email: createdUser.email,
+          accessToken
+        },
+        "User successfully created"
+      );
     } catch (error) {
-      console.log(error);
       throw Error("User not created: auth.service.ts");
     }
   }

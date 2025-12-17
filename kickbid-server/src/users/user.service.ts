@@ -2,6 +2,7 @@ import { User } from "generated/prisma/client";
 import { StatusCodes } from "http-status-codes";
 import { UserRepo } from "./user.repo";
 import { ResApi } from "@src/common/utils/resApi";
+import sanitizeUser from "@src/common/utils/sanitizeUser";
 
 export class UserService {
   static async profile(userId: string) {
@@ -11,8 +12,7 @@ export class UserService {
       return ResApi.error("User not found", StatusCodes.NOT_FOUND, { userId });
     }
 
-    // TODO: Sanitize user
-    return ResApi.success(userRecord, `Hello ${userRecord.name}`)
+    return ResApi.success(sanitizeUser(userRecord), `Hello ${userRecord.name}`)
   }
 
   static async getUsers() {
@@ -20,7 +20,8 @@ export class UserService {
 
     if (!userRecords) return ResApi.error("User not found", StatusCodes.NOT_FOUND);
 
-    // TODO: Sanitize all users using map
-    return ResApi.success(userRecords);
+    const sanitizedUsers = userRecords.map((user) => sanitizeUser(user));
+
+    return ResApi.success(sanitizedUsers);
   }
 }
