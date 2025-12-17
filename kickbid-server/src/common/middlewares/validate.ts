@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ZodError, ZodObject } from "zod";
 // import { ZodTypeAny } from "zod/v3";
 import { ApiError } from "../errors/ApiError";
-import httpStatus from "http-status-codes";
+import { StatusCodes } from "http-status-codes";
 
 export const validate = (schema: ZodObject) => (req: Request, _res: Response, next: NextFunction) => {
   try {
@@ -12,7 +12,7 @@ export const validate = (schema: ZodObject) => (req: Request, _res: Response, ne
     if (err instanceof ZodError) {
       return next(
         new ApiError(
-          httpStatus.BAD_REQUEST,
+          StatusCodes.BAD_REQUEST,
           "Validation Error",
           err.issues.map((e) => ({
             field: e.path.join("."),
