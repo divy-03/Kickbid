@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { User } from "generated/prisma/client";
 import { StatusCodes } from "http-status-codes"
 import { RegisterInput, LoginResponse, RegisterResponse } from "./auth.schema";
-import { generateTokens } from "@src/common/utils/jwtHandler";
+import { generateTokens, getNewAccessToken, validateRefreshToken } from "@src/common/utils/jwtHandler";
 import { SessionRepo } from "./session.repo";
 
 export class AuthService {
@@ -75,6 +75,43 @@ export class AuthService {
       }, `Welcome to Kickbid ${user.name}`);
     } catch (err) {
       return ResApi.error("Unable to login");
+    }
+  }
+
+  static async refresh(refreshToken: any, expectedUserId: string) {
+    try {
+      const decodedRefreshToken = validateRefreshToken(refreshToken);
+
+      if (!decodedRefreshToken) ResApi.error("Refresh Token Invalid");
+
+      const { userId } = decodedRefreshToken;
+
+      if (!userId || userId === "") ResApi.error("Unable to get the user id from the token");
+
+      if (userId !== expectedUserId) {
+        return ResApi.error("Session mismatch - please login again", StatusCodes.UNAUTHORIZED);
+      }
+
+      const user = await UserRepo.getUserById(userId);
+
+      if (!user) return ResApi.error("User not found", StatusCodes.NOT_FOUND);
+
+      const accessToken = await getNewAccessToken({ userId: userId });
+
+      return ResApi.success({
+        userId,
+        name: user.name,
+        email: user.email,
+        accessToken
+      })
+    } catch (err) {
+      console.error(err);
+      return ResApi.error(
+        `Unable to refresh the token: ${err}`,
+        StatusCodes.UNAUTHORIZED,
+        { refreshToken }
+      )
+
     }
   }
 }

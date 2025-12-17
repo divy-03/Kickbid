@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { LoginInput, RegisterInput } from "./auth.schema";
 import { StatusCodes } from "http-status-codes";
+import { SessionRepo } from "./session.repo";
 
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -41,6 +42,49 @@ export class AuthController {
 
     return res.status(status).json({
       success, message, data
+    })
+  }
+
+  static async refresh(req: Request, res: Response) {
+    const sessionId = req.headers['x-session-id'] as string;
+
+    if (!sessionId) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: "Session ID required"
+      })
+    }
+
+    const session = await SessionRepo.getSession(sessionId);
+
+    if (!session) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        success: false,
+        message: "Session Expired",
+      })
+    }
+
+    const { status, success, data, message } = await AuthService.refresh(session.refreshToken, session.userId);
+
+    return res.status(status).json({
+      success, message, data
+    })
+  }
+
+  static async logout(req: Request, res: Response) {
+    const sessionId = req.headers['x-session-id'] as string;
+
+    if (sessionId) {
+      try {
+        await SessionRepo.deleteSession(sessionId);
+      } catch (err) {
+        // NOTE: Session might not exist
+      }
+    }
+
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Logged out successfully",
     })
   }
 }

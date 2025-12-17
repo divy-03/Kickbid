@@ -8,10 +8,11 @@ const authRoutes = Router();
 authRoutes.post(
   "/register", validate(RegisterSchema), AuthController.register
 );
-
 authRoutes.post(
   "/login", validate(LoginSchema), AuthController.login
 );
+authRoutes.get("/refresh", AuthController.refresh);
+authRoutes.get("/logout", AuthController.logout);
 
 export default authRoutes;
 
