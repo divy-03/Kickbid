@@ -20,6 +20,7 @@ export class AuthService {
 
       return { status: StatusCodes.OK, data: { name: createdUser.name, email: createdUser.email }, message: "User successfully created" }
     } catch (error) {
+      console.log(error);
       throw Error("User not created: auth.service.ts");
     }
   }

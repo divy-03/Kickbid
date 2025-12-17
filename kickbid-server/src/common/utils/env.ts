@@ -1,4 +1,4 @@
-/** 
+/*
   Handles getting value from environment file for given variable name.
   Throws error if no value found in env file for given variable name
 */

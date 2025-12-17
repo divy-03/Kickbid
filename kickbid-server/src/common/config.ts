@@ -3,6 +3,8 @@ import { SignOptions } from "jsonwebtoken";
 
 export const INTERNAL_SERVER_ERROR = "Internal Server Error";
 
+export const LOG_LEVEL = env("LOG_LEVEL") || "info";
+
 export const BCRYPT_SALT_ROUNDS = parseInt(env("BCRYPT_SALT_ROUNDS")) || 10;
 
 export const JWT_SECRET = env("JWT_SECRET") || "my_secret_key";
