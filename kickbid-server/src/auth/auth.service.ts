@@ -96,7 +96,7 @@ export class AuthService {
 
       if (!user) return ResApi.error("User not found", StatusCodes.NOT_FOUND);
 
-      const accessToken = await getNewAccessToken({ userId: userId });
+      const accessToken = getNewAccessToken({ userId: userId });
 
       return ResApi.success({
         userId,

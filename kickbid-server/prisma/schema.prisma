@@ -18,22 +18,113 @@ model User {
   name        String
   email       String    @unique
   password    String
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
   role        Role      @default(PLAYER)
 
   // Relations
-  sessions    Session[]
+  sessions        Session[]
+  playerProfiles  PlayerProfile[]
+  captainTeams    Team[]  @relation("CaptainTeams")
+
+  @@map("users")
 }
 
 model Session {
   sessionId     String    @id @map("session_id")
   userId        String    @map("user_id")
   refreshToken  String    @map("refresh_token")
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime  @default(now()) @map("created_at")
   expiresAt     DateTime  @map("expires_at")
-
+  
   // Relations
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Tournament {
+  id            String    @id @default(cuid())
+  name          String
+  sport         String    // futsal, football, cricket
+  maxTeams      Int       @map("max_teams")
+  budget        Int       // per captain
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime  @map("end_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  players       PlayerProfile[]
+  teams         Team[]
+  auction       Auction?
+
+  @@map("tournaments")
+}
+
+model PlayerProfile {
+  id          String            @id @default(cuid())
+  rating      Int
+  skillLevel  PlayerSkillLevel  @map("skill_level")
+  position    String
+  
+  // Relations
+  userId        String          @map("user_id")
+  user          User            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  tournamentId  String          @map("tournament_id")
+  tournament    Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  teamId        String?         @map("team_id")
+  team          Team?           @relation(fields: [teamId], references: [id])
+  bids          Bid[]
+  
+  @@unique([userId, tournamentId]) // one profile per tournament
+  @@map("player_profiles")
+}
+
+model Team {
+  id                String    @id @default(cuid())
+  name              String
+  remainingBudget   Int       @map("remaining_budget")
+  captainId         String    @map("captain_id")
+  captain           User      @relation("CaptainTeams", fields: [captainId], references: [userId], onDelete: Cascade)
+  tournamentId      String    @map("tournament_id")
+  tournament        Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  players           PlayerProfile[]
+  bids              Bid[]
+  
+  @@unique([name, tournamentId])
+  @@map("teams")
+}
+
+model Auction {
+  id              String          @id @default(cuid())
+  status          AuctionStatus   @default(UPCOMING)
+  currentPlayerId String?         @map("current_player_id")
+  startTime       DateTime        @map("start_time")
+  endTime         DateTime        @map("end_time")
+  tournamentId    String          @unique @map("tournament_id")
+  
+  // Relations
+  tournament      Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  bids            Bid[]
+
+  @@map("auctions")
+}
+
+model Bid {
+  id              String          @id @default(cuid())
+  amount          Int
+  createdAt       DateTime        @default(now()) @map("created_at")
+  playerProfileId String          @map("player_profile_id")
+  playerProfile   PlayerProfile   @relation(fields: [playerProfileId], references: [id], onDelete: Cascade)
+  teamId          String          @map("team_id")
+  team            Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  auctionId       String          @map("auction_id")
+  auction         Auction         @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  
+  @@index([amount])
+  @@map("bids")
 }
 
 enum Role {
@@ -59,4 +150,17 @@ enum Position {
   LWB
   RWB
   GK
+}
+
+enum AuctionStatus {
+  UPCOMING
+  LIVE
+  ENDED
+}
+
+enum PlayerSkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PRO
 }
